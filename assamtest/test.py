@@ -11,27 +11,33 @@ def _suite_pop(name):
 		stack[-1]['suites'].append((name, tmp))
 
 
-def suite(name=None):
+def _prepare(name, args, decorators, fn):
+	_name = name or fn.__name__
+	if args:
+		_name += ':' + ';'.join(str(arg) for arg in args)
+
+	def wrapper():
+		fn(*args)
+
+	for d in decorators:
+		wrapper = d(wrapper)
+
+	return _name, wrapper
+
+
+def suite(name=None, args=[], decorators=[]):
 	def decorator(fn):
+		_name, wrapper = _prepare(name, args, decorators, fn)
 		_suite_push()
-		fn()
-		_suite_pop(name or fn.__name__)
+		wrapper()
+		_suite_pop(_name)
 		return fn
 	return decorator
 
 
 def test(name=None, args=[], decorators=[]):
 	def decorator(fn):
-		_name = name or fn.__name__
-		if args:
-			_name += ':' + ';'.join(str(arg) for arg in args)
-
-		def wrapper():
-			fn(*args)
-
-		for d in decorators:
-			wrapper = d(wrapper)
-
+		_name, wrapper = _prepare(name, args, decorators, fn)
 		stack[-1]['tests'].append((_name, wrapper))
 		return fn
 	return decorator
