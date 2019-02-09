@@ -4,7 +4,7 @@ import sys
 import importlib
 import pkgutil
 
-from . import stack, _unit_push, _unit_pop
+from . import stack, _suite_push, _suite_pop
 from .reporter import SpecReporter
 from .runner import run
 
@@ -15,9 +15,9 @@ def import_package(path):
 	if d.endswith('__init__.py'):
 		d = os.path.dirname(d)
 	for _, name, _ in pkgutil.iter_modules([d]):
-		_unit_push()
+		_suite_push()
 		import_package(path + '.' + name)
-		_unit_pop(name)
+		_suite_pop(name)
 
 
 def parse_args():

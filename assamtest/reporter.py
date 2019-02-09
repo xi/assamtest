@@ -20,10 +20,10 @@ class Reporter:
 	def leave_run(self):
 		pass
 
-	def enter_unit(self, name):
+	def enter_suite(self, name):
 		pass
 
-	def leave_unit(self, name):
+	def leave_suite(self, name):
 		pass
 
 	def test(self, name, result):
@@ -51,11 +51,11 @@ class SpecReporter(Reporter):
 		if self.stats['fail']:
 			return 1
 
-	def enter_unit(self, name):
+	def enter_suite(self, name):
 		self._print(name)
 		self.stack.append(name)
 
-	def leave_unit(self, name):
+	def leave_suite(self, name):
 		self.stack.pop()
 
 	def test(self, name, result):

@@ -1,21 +1,21 @@
-stack = [{'tests': [], 'units': []}]
+stack = [{'tests': [], 'suites': []}]
 
 
-def _unit_push():
-	stack.append({'tests': [], 'units': []})
+def _suite_push():
+	stack.append({'tests': [], 'suites': []})
 
 
-def _unit_pop(name):
+def _suite_pop(name):
 	tmp = stack.pop()
-	if tmp['tests'] or tmp['units']:
-		stack[-1]['units'].append((name, tmp))
+	if tmp['tests'] or tmp['suites']:
+		stack[-1]['suites'].append((name, tmp))
 
 
-def unit(name=None):
+def suite(name=None):
 	def decorator(fn):
-		_unit_push()
+		_suite_push()
 		fn()
-		_unit_pop(name or fn.__name__)
+		_suite_pop(name or fn.__name__)
 		return fn
 	return decorator
 
