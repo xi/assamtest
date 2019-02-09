@@ -26,6 +26,11 @@ def parse_args():
 	return parser.parse_args()
 
 
-args = parse_args()
-import_package(args.module)
-sys.exit(run(stack[-1], SpecReporter()))
+def main():
+	args = parse_args()
+	import_package(args.module)
+	sys.exit(run(stack[-1], SpecReporter()))
+
+
+if __name__ == '__main__':
+	main()
