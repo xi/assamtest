@@ -67,6 +67,8 @@ Register a function as a test:
 *	`args` (list): Arguments that should be passed to the test function
 *	`decorators` (list): The test function will be passed through these decorators before being executed
 
+Async functions are automatically executed in an event loop.
+
 ```python
 import assamtest
 from assamtest import expect
@@ -154,24 +156,6 @@ from assamtest.decorators import fail
 @assamtest.test(args=[5], decorators=[fail])
 def my_test(value):
 	expect.equal(2 + 2, value)
-```
-
-### `@decorator.synchronize`
-
-Start an asyncio event loop for the test and wait for it to complete::
-
-```python
-import asyncio
-
-import assamtest
-from assamtest import expect
-from assamtest.decorators import synchronize
-
-@assamtest.test()
-@synchronize
-async def my_test():
-	await asyncio.sleep(0.1)
-	expect.equal(2 + 2, 4)
 ```
 
 ### `Outcome(err, status, level)`

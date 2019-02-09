@@ -44,6 +44,19 @@ def test_simple():
 
 
 @assamtest.test()
+def test_async():
+	import asyncio
+
+	@assamtest.test(args=[4])
+	@assamtest.test(args=[5], decorators=[_decorators.fail])
+	async def my_test(value):
+		await asyncio.sleep(0.1)
+		expect.equal(2 + 2, value)
+
+	expect_stats(passed=2)
+
+
+@assamtest.test()
 def suite_simple():
 	@assamtest.suite()
 	def my_suite():
@@ -56,6 +69,7 @@ def suite_simple():
 			expect.equal(2 + 2, 4)
 
 	expect_stats(passed=1)
+
 
 @assamtest.test()
 def suite_nonlocal():
@@ -78,6 +92,7 @@ def suite_nonlocal():
 			expect.true(a)
 
 	expect_stats(passed=3)
+
 
 @assamtest.test()
 def expect_simple():
@@ -106,15 +121,3 @@ def decorators():
 			expect.equal(2 + 2, value)
 
 		expect_stats(passed=2)
-
-	@assamtest.test()
-	def synchronize():
-		import asyncio
-
-		@assamtest.test()
-		@_decorators.synchronize
-		async def my_test():
-			await asyncio.sleep(0.1)
-			expect.equal(2 + 2, 4)
-
-		expect_stats(passed=1)

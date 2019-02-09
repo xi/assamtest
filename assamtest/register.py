@@ -1,3 +1,7 @@
+import asyncio
+import functools
+import inspect
+
 stack = [{'tests': [], 'suites': []}]
 
 
@@ -16,8 +20,13 @@ def _prepare(name, args, decorators, fn):
 	if args:
 		_name += ':' + ';'.join(str(arg) for arg in args)
 
+	@functools.wraps(fn)
 	def wrapper():
-		fn(*args)
+		result = fn(*args)
+		if inspect.isawaitable(result):
+			loop = asyncio.get_event_loop()
+			loop.run_until_complete(result)
+			loop.close()
 
 	for d in decorators:
 		wrapper = d(wrapper)
