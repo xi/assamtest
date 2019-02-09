@@ -2,7 +2,16 @@ assamtest is an experimental python test framework inspired by JavaScript
 libraries such as [mocha](https://mochajs.org/) or
 [jasmine](https://jasmine.github.io/).
 
+-	everything is explicit, no magic
+-	simple generated tests and suites
+-	arbitrary nesting of test suites
+-	compatible with converage
+-	easily extendable with decorators and custom outcomes
+
+## Usage
+
 ```python
+# tests.py
 import assamtest
 from assamtest import expect
 
@@ -26,7 +35,7 @@ A suite is just a function
 ## Why another test framework?
 
 The idea for this library came out of my growing frustration with pytest,
-especially its `parametrize` feature.
+especially its [`parametrize`][1] feature.
 
 In jasmine, parametrization is trivial:
 
@@ -40,9 +49,9 @@ describe('#isNumber', function() {
 });
 ```
 
-This is because the tests are registered explicitly. The popular python test
-frameworks (pytest, unittest) on the other hand use an implicit mechanism where
-each function that starts with 'test\_' is registered. This makes
+This is because the tests are [registered explicitly][2]. The popular python
+test frameworks (pytest, unittest) on the other hand use an implicit mechanism
+where each function that starts with 'test\_' is registered. This makes
 parametrization way harder than it needs to be.
 
 This library is an attempt to bring the explicit approach to python. However,
@@ -56,6 +65,9 @@ approach a bit less elegant in python:
 
 -	In python, variables are local by default. If you want to write to variables
 	from a descendant scope you have to use the `nonlocal` (or `global`) keyword.
+
+[1]: https://docs.pytest.org/en/latest/parametrize.html
+[2]: https://mochajs.org/#dynamically-generating-tests
 
 ## Reference
 
