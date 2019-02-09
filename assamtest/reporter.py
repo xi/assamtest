@@ -50,6 +50,9 @@ class SpecReporter(Reporter):
 
 		if self.stats['fail']:
 			return 1
+		elif sum(self.stats.values()) == 0:
+			print(colored('No tests found', 'YELLOW'))
+			return 5
 
 	def enter_suite(self, name):
 		self._print(name)
