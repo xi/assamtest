@@ -4,7 +4,7 @@ import sys
 import importlib
 import pkgutil
 
-from ._test import stack, _suite_push, _suite_pop
+from .register import stack, _suite_push, _suite_pop
 from .reporter import SpecReporter
 from .runner import run
 

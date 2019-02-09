@@ -24,13 +24,13 @@ def expect_stats(**stats):
 @assamtest.before_each()
 def before_each():
 	global original_stack, stack
-	original_stack = assamtest._test.stack
-	assamtest._test.stack = stack = [{'tests': [], 'suites': []}]
+	original_stack = assamtest.register.stack
+	assamtest.register.stack = stack = [{'tests': [], 'suites': []}]
 
 
 @assamtest.after_each()
 def after_each():
-	assamtest._test.stack = original_stack
+	assamtest.register.stack = original_stack
 
 
 @assamtest.test()
