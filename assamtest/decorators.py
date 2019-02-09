@@ -20,7 +20,7 @@ def skip(fn):
 	return wrapper
 
 
-def async_test(fn):
+def synchronize(fn):
 	@functools.wraps(fn)
 	def wrapper(*args, **kwargs):
 		coro = asyncio.coroutine(fn)
