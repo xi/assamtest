@@ -33,6 +33,7 @@ class Reporter:
 class SpecReporter(Reporter):
 	def __init__(self):
 		self.stack = []
+		self.total = 0
 		self.stats = {
 			'SUCCESS': {},
 			'INFO': {},
@@ -40,7 +41,7 @@ class SpecReporter(Reporter):
 			'ERROR': {},
 		}
 
-	def render_level(self, msg, level, status):
+	def _render(self, msg, level, status):
 		if status == 'passed':
 			char = '✓'
 		elif status == 'failed':
@@ -58,33 +59,35 @@ class SpecReporter(Reporter):
 	def _print(self, msg):
 		print('  ' * len(self.stack) + msg)
 
-	def leave_run(self):
-		print()
-		for level in ['SUCCESS', 'INFO', 'WARNING', 'ERROR']:
-			for status, count in sorted(self.stats[level].items()):
-				print(self.render_level('%i %s' % (count, status), level, status))
-
-		if sum(self.stats['ERROR'].values()) != 0:
-			return 1
-		elif sum(sum(l.values()) for l in self.stats.values()) == 0:
-			print(colored('No tests found', 'YELLOW'))
-			return 5
-
 	def enter_suite(self, name):
 		self._print(name)
 		self.stack.append(name)
 
-	def leave_suite(self, name):
-		self.stack.pop()
-
 	def test(self, name, err, status, level):
+		self.total += 1
 		self.stats[level].setdefault(status, 0)
 		self.stats[level][status] += 1
 
 		if level == 'SUCCESS':
-			self._print(self.render_level('', level, status) + colored(name, 'DIM'))
+			self._print(self._render('', level, status) + colored(name, 'DIM'))
 		else:
-			self._print(self.render_level(name, level, status))
+			self._print(self._render(name, level, status))
 
 		if err and str(err):
 			self._print('    %s' % err)
+
+	def leave_suite(self, name):
+		self.stack.pop()
+
+	def leave_run(self):
+		if self.total == 0:
+			print(colored('No tests found', 'YELLOW'))
+			return 5
+
+		print()
+		for level in ['SUCCESS', 'INFO', 'WARNING', 'ERROR']:
+			for status, count in sorted(self.stats[level].items()):
+				print(self._render('%i %s' % (count, status), level, status))
+
+		if sum(self.stats['ERROR'].values()) != 0:
+			return 1
