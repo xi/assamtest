@@ -1,10 +1,10 @@
+from .expect import expect
+
+
 def fail(fn):
 	def wrapper():
-		try:
+		with expect.raises(AssertionError):
 			fn()
-		except AssertionError:
-			return
-		assert False, 'Expected to fail'
 	return wrapper
 
 
