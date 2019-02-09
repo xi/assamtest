@@ -26,7 +26,7 @@ class Reporter:
 	def leave_suite(self, name):
 		pass
 
-	def test(self, name, result):
+	def test(self, name, err, status, level):
 		pass
 
 
@@ -34,23 +34,39 @@ class SpecReporter(Reporter):
 	def __init__(self):
 		self.stack = []
 		self.stats = {
-			'fail': 0,
-			'pass': 0,
+			'SUCCESS': {},
+			'INFO': {},
+			'WARNING': {},
+			'ERROR': {},
 		}
+
+	def render_level(self, msg, level, status):
+		if status == 'passed':
+			char = '✓'
+		elif status == 'failed':
+			char = '✖'
+		else:
+			char = status[0].upper()
+		color = {
+			'SUCCESS': 'GREEN',
+			'INFO': 'CYAN',
+			'WARNING': 'YELLOW',
+			'ERROR': 'RED',
+		}[level]
+		return colored('%s %s' % (char, msg), color)
 
 	def _print(self, msg):
 		print('  ' * len(self.stack) + msg)
 
 	def leave_run(self):
 		print()
-		if self.stats['pass']:
-			print(colored('✓ %i passing' % self.stats['pass'], 'GREEN'))
-		if self.stats['fail']:
-			print(colored('✖ %i failing' % self.stats['fail'], 'RED'))
+		for level in ['SUCCESS', 'INFO', 'WARNING', 'ERROR']:
+			for status, count in sorted(self.stats[level].items()):
+				print(self.render_level('%i %s' % (count, status), level, status))
 
-		if self.stats['fail']:
+		if sum(self.stats['ERROR'].values()) != 0:
 			return 1
-		elif sum(self.stats.values()) == 0:
+		elif sum(sum(l.values()) for l in self.stats.values()) == 0:
 			print(colored('No tests found', 'YELLOW'))
 			return 5
 
@@ -61,11 +77,14 @@ class SpecReporter(Reporter):
 	def leave_suite(self, name):
 		self.stack.pop()
 
-	def test(self, name, result):
-		if result:
-			self.stats['fail'] += 1
-			self._print(colored('✖ %s' % name, 'RED'))
-			self._print('    %s' % result)
+	def test(self, name, err, status, level):
+		self.stats[level].setdefault(status, 0)
+		self.stats[level][status] += 1
+
+		if level == 'SUCCESS':
+			self._print(self.render_level('', level, status) + colored(name, 'DIM'))
 		else:
-			self.stats['pass'] += 1
-			self._print('%s %s' % (colored('✓', 'GREEN'), colored(name, 'DIM')))
+			self._print(self.render_level(name, level, status))
+
+		if err and str(err):
+			self._print('    %s' % err)

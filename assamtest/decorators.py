@@ -2,6 +2,7 @@ import asyncio
 import functools
 
 from .expect import expect
+from .runner import Outcome
 
 
 def fail(fn):
@@ -15,7 +16,7 @@ def fail(fn):
 def skip(fn):
 	@functools.wraps(fn)
 	def wrapper(*args, **kwargs):
-		pass
+		raise Outcome(None, 'skipped', 'INFO')
 	return wrapper
 
 

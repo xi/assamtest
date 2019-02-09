@@ -1,8 +1,23 @@
+class Outcome(Exception):
+	def __init__(self, err, status, level):
+		self.err = err
+		self.status = status
+		self.level = level
+
+	def __str__(self):
+		return str(self.err or '')
+
+
 def run_test(test):
 	try:
 		test()
-	except Exception as e:
-		return e
+	except Outcome as err:
+		return err, err.status, err.level
+	except AssertionError as err:
+		return err, 'failed', 'ERROR'
+	except Exception as err:
+		return err, 'errored', 'ERROR'
+	return None, 'passed', 'SUCCESS'
 
 
 def _run(suite, reporter, before_each=[], after_each=[]):
@@ -18,7 +33,7 @@ def _run(suite, reporter, before_each=[], after_each=[]):
 		for fn in before_each:
 			fn()
 
-		reporter.test(name, run_test(test))
+		reporter.test(name, *run_test(test))
 
 		for fn in after_each:
 			fn()
