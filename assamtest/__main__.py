@@ -27,6 +27,7 @@ def parse_args():
 
 
 def main():
+	sys.path.insert(0, '')
 	args = parse_args()
 	import_package(args.module)
 	sys.exit(run(stack[-1], SpecReporter()))
